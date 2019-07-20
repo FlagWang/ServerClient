@@ -1,5 +1,7 @@
 import socket
 import sys
+import time
+
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -21,13 +23,22 @@ while True:
         while True:
             data = connection.recv(16)
             print >>sys.stderr, 'received "%s"' % data
-            if data:
+            if data == "q":
+                print >>sys.stderr, 'disconnecting...'
+                connection.sendall("disconnected")
+                break
+            elif data:
+                print >>sys.stderr, 'receving data from client: "%s"' % data
                 print >>sys.stderr, 'sending data back to the client'
                 connection.sendall(data)
             else:
+                time.sleep(5)
                 print >>sys.stderr, 'no more data from', client_address
-                break
             
     finally:
         # Clean up the connection
-        connection.close()
+        print >>sys.stderr, 'quiting...'
+        time.sleep(2)
+        break
+
+connection.close()

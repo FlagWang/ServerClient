@@ -1,5 +1,6 @@
 import socket
 import sys
+import time
 
 def get_constants(prefix):
     """Create a dictionary mapping socket module constants to their names."""
@@ -20,21 +21,26 @@ print >>sys.stderr, 'Type    :', types[sock.type]
 print >>sys.stderr, 'Protocol:', protocols[sock.proto]
 print >>sys.stderr
 
-try:
-    
-    # Send data
-    message = 'This is the message.  It will be repeated.'
-    print >>sys.stderr, 'sending "%s"' % message
-    sock.sendall(message)
+# Send data
+message = 'This is the message.  It will be repeated.'
+print >>sys.stderr, 'sending "%s"' % message
+sock.sendall(message)
 
-    amount_received = 0
-    amount_expected = len(message)
-    
-    while amount_received < amount_expected:
-        data = sock.recv(16)
-        amount_received += len(data)
-        print >>sys.stderr, 'received "%s"' % data
+while True:
+    data = raw_input("please input command: ")
+    try:
+        if data == "q":
+            confirm = raw_input("do you want to disconnect? yes or not: ")
+            if confirm == "yes":
+                print >>sys.stderr, 'you are disconnecting...'
+                break
+            else:
+                print >>sys.stderr, 'rolling back...'
+        else:
+            print >>sys.stderr, 'data prepared.'
+    finally:
+        sock.sendall(data)
+        print >>sys.stderr, 'sent to server.'
+        time.sleep(2)
 
-finally:
-    print >>sys.stderr, 'closing socket'
-    sock.close()
+sock.close()
